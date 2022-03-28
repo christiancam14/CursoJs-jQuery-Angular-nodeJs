@@ -9,7 +9,7 @@ var app = express();
 
 // Cargas archivos de rutas
 
-
+var project_routes = require('./routes/project');
 
 // middlewares
 
@@ -18,17 +18,10 @@ app.use(bodyParser.json());
 
 // CORS
 
+
 // Rutas
 
-app.get('/', (req, res) => {
-    res.status(200).send("<h1>Página de inicio</h1>")
-});
-
-app.get('/test', (req, res) => {
-    res.status(200).send({
-        message: "Hola mundo, este es mi API de NodeJs"
-    })
-});
+app.use('/api', project_routes);
 
 // Exportar
 
