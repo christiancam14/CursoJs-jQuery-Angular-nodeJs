@@ -1,5 +1,6 @@
 'use strict'
 
+
 var Project = require('../models/project');
 var fs = require('fs');
 var path = require('path');
@@ -99,42 +100,42 @@ var controller = {
 		});
 	},
 
-	uploadImage: function(req, res){
-		var projectId = req.params.id;
-		var fileName = 'Imagen no subida...';
+	uploadImage: function (req, res) {
+        var projectId = req.params.id;
+        var fileName = 'Imagen no subida....';
 
-		if(req.files){
-			var filePath = req.files.image.path;
-			var fileSplit = filePath.split('\\');
-			var fileName = fileSplit[1];
-			var extSplit = fileName.split('\.');
-			var fileExt = extSplit[1];
+        if (req.file) {
+            var filePath = req.file.path;
+            var fileSplit = filePath.split('\\')
+            var fileName = fileSplit[2];
+            var extSplit = req.file.originalname.split('\.');
+            var fileExt = extSplit[1];
 
-			if(fileExt == 'png' || fileExt == 'jpg' || fileExt == 'jpeg' || fileExt == 'gif'){
+            if (fileExt == 'png' || fileExt == 'jpg' || fileExt == 'jpeg' || fileExt == 'gif') {
+                Project.findByIdAndUpdate(projectId, { image: fileName }, { new: true }, (err, projectUpdated) => {
+                    if (err) {
+                        return res.status(500).send({ message: 'Error al actualizar los datos' })
+                    }
 
-				Project.findByIdAndUpdate(projectId, {image: fileName}, {new: true}, (err, projectUpdated) => {
-					if(err) return res.status(500).send({message: 'La imagen no se ha subido'});
+                    if (!projectUpdated) return res.status(404).send({ message: 'No existe el proyecto' });
 
-					if(!projectUpdated) return res.status(404).send({message: 'El proyecto no existe y no se ha asignado la imagen'});
+                    return res.status(200).send({
+                        project: projectUpdated
+                    });
+                })
+            } else {
+                fs.unlink(filePath, (err) => {
+                    return res.status(200).send({ message: 'La extension no es valida' + fileExt})
+                });
+            }
 
-					return res.status(200).send({
-						project: projectUpdated
-					});
-				});
+        } else {
+            return res.status(200).send({
+                message: fileName
+            });
+        }
 
-			}else{
-				fs.unlink(filePath, (err) => {
-					return res.status(200).send({message: 'La extensión no es válida'});
-				});
-			}
-
-		}else{
-			return res.status(200).send({
-				message: fileName
-			});
-		}
-
-	},
+    },
 
 	getImageFile: function(req, res){
 		var file = req.params.image;

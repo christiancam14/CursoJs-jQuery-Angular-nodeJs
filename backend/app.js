@@ -2,11 +2,21 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
+// const multer = require('multer');
 
 var app = express();
 
 // cargar archivos rutas
 var project_routes = require('./routes/project');
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, './uploads/users/')
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, "user" + Date.now() + file.originalname);
+//     }
+// });
+
 
 // middlewares
 app.use(bodyParser.urlencoded({extended:false}));
